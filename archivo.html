@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Trivia Escolar</title>
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f0f4f8;
+    text-align: center;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 50px;
+}
+
+h2 {
+    color: #333;
+}
+
+.option {
+    display: block;
+    margin: 10px;
+    padding: 10px;
+    background: #e0e0e0;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.correct {
+    background-color: #4CAF50 !important;
+    color: white;
+}
+
+.incorrect {
+    background-color: #f44336 !important;
+    color: white;
+}
+
+button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    background: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:disabled {
+    background: gray;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container animate__animated animate__fadeIn">
+    <h2 id="question">Pregunta</h2>
+    <div id="options"></div>
+    <button id="nextBtn" disabled>Siguiente</button>
+</div>
+
+<script>
+const questions = [
+    {
+        q: "¿Cuál es el planeta más grande?",
+        options: ["Tierra", "Marte", "Júpiter", "Venus"],
+        answer: 2
+    },
+    {
+        q: "¿Cuánto es 5 x 6?",
+        options: ["30", "25", "35", "20"],
+        answer: 0
+    },
+    {
+        q: "¿Capital de México?",
+        options: ["Guadalajara", "Monterrey", "CDMX", "Puebla"],
+        answer: 2
+    },
+    {
+        q: "¿Quién descubrió América?",
+        options: ["Colón", "Newton", "Einstein", "Tesla"],
+        answer: 0
+    },
+    {
+        q: "¿Animal más rápido?",
+        options: ["León", "Tigre", "Guepardo", "Perro"],
+        answer: 2
+    },
+    {
+        q: "¿Lenguaje de programación web?",
+        options: ["HTML", "Python", "C++", "Java"],
+        answer: 0
+    },
+    {
+        q: "¿Cuántos continentes hay?",
+        options: ["5", "6", "7", "8"],
+        answer: 2
+    },
+    {
+        q: "¿Qué gas respiramos?",
+        options: ["CO2", "Oxígeno", "Hidrógeno", "Helio"],
+        answer: 1
+    },
+    {
+        q: "¿Instrumento musical?",
+        options: ["Mesa", "Guitarra", "Silla", "Puerta"],
+        answer: 1
+    },
+    {
+        q: "¿Resultado de 10 + 15?",
+        options: ["20", "25", "30", "35"],
+        answer: 1
+    }
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const nextBtn = document.getElementById("nextBtn");
+
+function loadQuestion() {
+    answered = false;
+    nextBtn.disabled = true;
+    optionsEl.innerHTML = "";
+
+    const q = questions[current];
+    questionEl.innerText = q.q;
+
+    q.options.forEach((opt, index) => {
+        const btn = document.createElement("div");
+        btn.classList.add("option");
+        btn.innerText = opt;
+
+        btn.onclick = () => selectAnswer(btn, index);
+
+        optionsEl.appendChild(btn);
+    });
+}
+
+function selectAnswer(selected, index) {
+    if (answered) return;
+
+    answered = true;
+    nextBtn.disabled = false;
+
+    const correctIndex = questions[current].answer;
+    const options = document.querySelectorAll(".option");
+
+    options.forEach((opt, i) => {
+        if (i === correctIndex) {
+            opt.classList.add("correct");
+        }
+        if (i === index && i !== correctIndex) {
+            opt.classList.add("incorrect");
+        }
+    });
+
+    if (index === correctIndex) {
+        score++;
+    }
+}
+
+nextBtn.onclick = () => {
+    current++;
+
+    if (current < questions.length) {
+        loadQuestion();
+    } else {
+        showResult();
+    }
+};
+
+function showResult() {
+    let feedback = "";
+
+    if (score === 10) {
+        feedback = "¡Excelente! 🏆";
+    } else if (score >= 7) {
+        feedback = "Muy bien 👍";
+    } else if (score >= 5) {
+        feedback = "Bien, pero puedes mejorar 🙂";
+    } else {
+        feedback = "Sigue practicando 💪";
+    }
+
+    document.querySelector(".container").innerHTML = `
+        <h2 class="animate__animated animate__bounce">Resultado final</h2>
+        <p>Tu puntaje: <strong>${score}/10</strong></p>
+        <p>${feedback}</p>
+        <button onclick="location.reload()">Reintentar</button>
+    `;
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
